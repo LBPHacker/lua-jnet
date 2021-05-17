@@ -1,0 +1,7 @@
+ignore/
+doc/
+test/
+examples/
+*.sublime-*
+*.rock
+config.ld
