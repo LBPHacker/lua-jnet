@@ -117,7 +117,7 @@ function set_i:contains(to_find)
 			return false
 		end
 		if curr.net and curr.net:contains(to_find) then
-			return true
+			return curr.net
 		end
 		if i == to_find.all_ - to_find.netwb_ - 1 then
 			break
