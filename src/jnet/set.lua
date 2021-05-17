@@ -105,10 +105,35 @@ function set_i:remove(to_remove)
 	return true
 end
 
+function set_i:contains(to_find)
+	local mt = getmetatable(to_find)
+	assert(mt and mt.jnet_base__ == net.net_m, "argument #1 is not a net")
+	assert(self.all_ == to_find.all_, "argument #1 is of the wrong bit count")
+	local prev = self.root_
+	local prevbit = false
+	local curr = self.root_.left
+	for i = to_find.all_ - 1, to_find.all_ - to_find.netwb_ - 1, -1 do
+		if not curr then
+			return false
+		end
+		if curr.net and curr.net:contains(to_find) then
+			return true
+		end
+		if i == to_find.all_ - to_find.netwb_ - 1 then
+			break
+		end
+		local bit = to_find:bit(i)
+		prev = curr
+		prevbit = bit
+		curr = curr[bit and "right" or "left"]
+	end
+	return false
+end
+
 function set_i:nets()
 	return coroutine.wrap(function()
 		local prev = self.root_
-		local curr = self.root_.left
+		local curr = self.root_.left or self.root_
 		while true do
 			if curr == self.root_ then
 				return
