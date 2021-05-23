@@ -62,6 +62,9 @@ end
 function set_i:remove(to_remove)
 	local mt = getmetatable(to_remove)
 	assert(mt and mt.jnet_base__ == net.net_m, "argument #1 is not a net")
+	if not self.all_ then
+		return false
+	end
 	assert(self.all_ == to_remove.all_, "argument #1 is of the wrong bit count")
 	local prev = self.root_
 	local prevbit = false
@@ -108,6 +111,9 @@ end
 function set_i:contains(to_find)
 	local mt = getmetatable(to_find)
 	assert(mt and mt.jnet_base__ == net.net_m, "argument #1 is not a net")
+	if not self.all_ then
+		return false
+	end
 	assert(self.all_ == to_find.all_, "argument #1 is of the wrong bit count")
 	local prev = self.root_
 	local prevbit = false
