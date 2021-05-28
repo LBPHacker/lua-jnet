@@ -25,9 +25,9 @@ local function new(bits, netwb)
 		local octets = { bits:match("^(%d+)%.(%d+)%.(%d+)%.(%d+)$") }
 		assert(octets[1], "unrecognized format")
 		for i = 1, 4 do
+			assert(not octets[i]:find("[^0-9]") and #octets[i] <= 3, "unrecognized format")
 			octets[i] = tonumber(octets[i])
-			assert(check.integer(octets[i]), "non-integer component")
-			assert(octets[i] >= 0 and octets[i] <= 255, "out of range component")
+			assert(octets[i] >= 0 and octets[i] <= 255, "comonent is out of range")
 		end
 		bits = { (octets[1] << 8) + octets[2], (octets[3] << 8) + octets[4] }
 	end

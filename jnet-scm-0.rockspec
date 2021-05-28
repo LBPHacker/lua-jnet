@@ -23,6 +23,7 @@ build = {
 		["jnet.net"] = "src/jnet/net.lua",
 		["jnet.check"] = "src/jnet/check.lua",
 		["jnet.ipv4"] = "src/jnet/ipv4.lua",
+		["jnet.ipv6"] = "src/jnet/ipv6.lua",
 		["jnet.util"] = "src/jnet/util.lua",
 	}
 }
