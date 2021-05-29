@@ -13,17 +13,17 @@ local function replace(old_node, new_node)
 	end
 end
 
-function set_i:add(to_add)
-	local mt = getmetatable(to_add)
+function set_i:insert(to_insert)
+	local mt = getmetatable(to_insert)
 	assert(mt and mt.jnet_base__ == net.net_m, "argument #1 is not a net")
 	if not self.all_ then
-		self.all_ = to_add.all_
+		self.all_ = to_insert.all_
 	end
-	assert(self.all_ == to_add.all_, "argument #1 is of the wrong bit count")
+	assert(self.all_ == to_insert.all_, "argument #1 is of the wrong bit count")
 	local prev = self.root_
 	local prevbit = false
 	local curr = self.root_.left
-	for i = to_add.all_ - 1, to_add.all_ - to_add.netwb_ - 1, -1 do
+	for i = to_insert.all_ - 1, to_insert.all_ - to_insert.netwb_ - 1, -1 do
 		if not curr then
 			curr = {
 				up = prev,
@@ -33,17 +33,17 @@ function set_i:add(to_add)
 		if curr.net then
 			return false
 		end
-		if i == to_add.all_ - to_add.netwb_ - 1 then
+		if i == to_insert.all_ - to_insert.netwb_ - 1 then
 			break
 		end
-		local bit = to_add:bit(i)
+		local bit = to_insert:bit(i)
 		prev = curr
 		prevbit = bit
 		curr = curr[bit and "right" or "left"]
 	end
 	replace(curr, {
 		up = curr.up,
-		net = to_add,
+		net = to_insert,
 	})
 	while true do
 		if prev.left and prev.left.net and prev.right and prev.right.net then
@@ -98,7 +98,7 @@ function set_i:remove(to_remove)
 	if fragmented then
 		for i = to_remove.netwb_ - 1, fragmented.netwb_, -1 do
 			local flip = to_remove:flip()
-			self:add(flip)
+			self:insert(flip)
 			if to_remove > flip then
 				to_remove = flip
 			end
@@ -160,11 +160,68 @@ function set_i:nets()
 	end)
 end
 
+function set_i:add(other)
+	assert(getmetatable(other) == getmetatable(self), "other operand is of the wrong type")
+	if not other.all_ then
+		return
+	end
+	assert(not self.all_ or self.all_ == other.all_, "other operand is of the wrong bit count")
+	for net in other:nets() do
+		self:insert(net)
+	end
+end
+
+function set_i:subtract(other)
+	assert(getmetatable(other) == getmetatable(self), "other operand is of the wrong type")
+	if not other.all_ then
+		return
+	end
+	assert(not self.all_ or self.all_ == other.all_, "other operand is of the wrong bit count")
+	for net in other:nets() do
+		self:remove(net)
+	end
+end
+
+function set_i:intersect(other)
+	assert(getmetatable(other) == getmetatable(self), "other operand is of the wrong type")
+	local self_minus_other = self - other
+	local other_minus_self = other - self
+	self:add(other)
+	self:subtract(self_minus_other)
+	self:subtract(other_minus_self)
+end
+
+function set_m:__add(other)
+	local clone = self:clone()
+	clone:add(other)
+	return clone
+end
+
+function set_m:__sub(other)
+	local clone = self:clone()
+	clone:subtract(other)
+	return clone
+end
+
+function set_m:__mul(other)
+	local clone = self:clone()
+	clone:intersect(other)
+	return clone
+end
+
 local function new()
 	return setmetatable({
 		root_ = {},
 		all_ = false,
 	}, set_m)
+end
+
+function set_i:clone()
+	local clone = new()
+	for net in self:nets() do
+		clone:insert(net)
+	end
+	return clone
 end
 
 local function range(first, last)
@@ -174,7 +231,7 @@ local function range(first, last)
 	assert(first.all_ == last.all_, "argument #2 is of the wrong bit count")
 	assert(first.netwb_ == last.netwb_, "argument #2 is of the wrong network bit count")
 	local all = new()
-	all:add(first:promote_(0, 0))
+	all:insert(first:promote_(0, 0))
 	for i = 1, first.netwb_ do
 		local flip = first:flip()
 		if first > flip then
