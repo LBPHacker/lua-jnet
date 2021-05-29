@@ -19,10 +19,12 @@ local function new(bits, netwb)
 		for group in bits:gmatch("[^:]*") do
 			table.insert(groups, group:lower())
 		end
-		if groups[1] == "" and groups[2] == "" then
+		if groups[1] == "" then
+			assert(groups[2] == "", "malformed leading empty group")
 			table.remove(groups, 1)
 		end
-		if groups[#groups - 1] == "" and groups[#groups] == "" then
+		if groups[#groups] == "" then
+			assert(groups[#groups - 1] == "", "malformed trailing empty group")
 			table.remove(groups, #groups)
 		end
 		local has_empty = false
