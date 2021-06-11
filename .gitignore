@@ -6,3 +6,4 @@ examples/
 *.rock
 config.ld
 luacov*
+*.rockspec
