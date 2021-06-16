@@ -137,16 +137,10 @@ function set_i:contains(to_find)
 end
 
 function set_i:nets()
-	return coroutine.wrap(function()
-		local prev = self.root_
-		local curr = self.root_.left or self.root_
+	local prev = nil
+	local curr = self.root_
+	return function()
 		while true do
-			if curr == self.root_ then
-				return
-			end
-			if curr.net then
-				coroutine.yield(curr.net)
-			end
 			local pprev = prev
 			prev = curr
 			if pprev == curr.up then
@@ -156,8 +150,14 @@ function set_i:nets()
 			elseif pprev == curr.right then
 				curr = curr.up
 			end
+			if not curr or curr == self.root_ then
+				return
+			end
+			if curr.net then
+				return curr.net
+			end
 		end
-	end)
+	end
 end
 
 function set_i:add(other)
