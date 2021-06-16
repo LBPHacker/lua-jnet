@@ -89,15 +89,6 @@ function net_m:__sub(other)
 	return self:new_(self.all_, self:longadd_(self.bits_, other.bits_, -1), self.netwb_)
 end
 
-function net_i:flip()
-	local new_bits = util.numeric_clone(self.bits_)
-	local bit = self.all_ - self.netwb_
-	local offset = bit % BITS
-	local index = #new_bits - bit // BITS
-	new_bits[index] = new_bits[index] ~ (1 << offset)
-	return self:new_(self.all_, new_bits, self.netwb_)
-end
-
 function net_m:__div(other)
 	assert(check.integer(other), "other operand is not an integer")
 	assert(other >= 0 and other <= self.all_, "other operand is out of range")
