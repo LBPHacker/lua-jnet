@@ -1,5 +1,5 @@
 local function integer(thing)
-	return type(thing) == "number" and math.floor(thing) == thing and math.abs(thing) < math.huge
+	return math.type(thing) == "integer"
 end
 
 return {
