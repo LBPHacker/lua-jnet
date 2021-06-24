@@ -209,11 +209,26 @@ function set_m:__mul(other)
 	return clone
 end
 
-local function new()
-	return setmetatable({
+function set_m:__tostring()
+	local arr = {}
+	for net in self:nets() do
+		table.insert(arr, tostring(net))
+	end
+	return ("{ %s }"):format(table.concat(arr, ", "))
+end
+
+local function new(nets)
+	assert(not nets or type(nets) == "table")
+	local set = setmetatable({
 		root_ = {},
 		all_ = false,
 	}, set_m)
+	if nets then
+		for i = 1, #nets do
+			set:insert(nets[i])
+		end
+	end
+	return set
 end
 
 function set_i:clone()

@@ -3,7 +3,7 @@ local ipv6 = require("jnet.ipv6")
 local set = require("jnet.set")
 local net = require("jnet.net")
 
-local any_funcs = { ipv4.new, ipv6.new, net.new }
+local any_funcs = { set.new, ipv4.new, ipv6.new, net.new }
 local function any(...)
 	local ok, err
 	for i = 1, #any_funcs do
